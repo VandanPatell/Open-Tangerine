@@ -52,3 +52,5 @@ SOFTWARE.
 ## Windows/Linux desktop edition
 
 The independently authored Python/Qt desktop edition uses Pillow (HPND), pypdf (BSD-3-Clause), PySide6/Shiboken and Qt (LGPLv3/GPLv3 options), Python (PSF) and PyInstaller (GPL with bootloader distribution exception). Exact pins are in `Desktop/requirements.txt`; portable builds include dependency versions and license texts under `licenses/`, and the corresponding application source under `source/`. Qt remains dynamically linked. Optional FFmpeg is installed and selected by the user and is not redistributed. Its build-specific licenses apply.
+
+Spreadsheet and text-document conversion additionally uses openpyxl and et-xmlfile (MIT), defusedxml (PSF), ReportLab (BSD) and charset-normalizer (MIT). ReportLab's bundled Vera font retains its Bitstream Vera license. These libraries are unmodified; exact versions and distribution license texts are included by the desktop packaging script. Optional LibreOffice is a separate user installation and is not redistributed.

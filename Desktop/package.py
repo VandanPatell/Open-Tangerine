@@ -2,7 +2,7 @@
 import hashlib, importlib.metadata, json, os, shutil, subprocess, sys
 from pathlib import Path
 r=Path(__file__).resolve().parent;os.chdir(r)
-subprocess.run([sys.executable,'-m','PyInstaller','--noconfirm','--clean','--onedir','--name','OpenTangerine','--add-data','icon.png:.','--collect-all','pypdf','app.py'],check=True)
+subprocess.run([sys.executable,'-m','PyInstaller','--noconfirm','--clean','--onedir','--name','OpenTangerine','--workpath',str(r.parent/'.build/desktop-pyinstaller'),'--specpath',str(r.parent/'.build/desktop-pyinstaller-spec'),'--add-data',str(r/'icon.png')+':.','--collect-all','pypdf','--collect-all','reportlab','--collect-all','openpyxl','--collect-all','defusedxml',str(r/'app.py')],check=True)
 dest=r/'dist/OpenTangerine';lic=dest/'licenses';lic.mkdir(exist_ok=True)
 shutil.copyfile(r.parent/'LICENSE',lic/'Open-Tangerine-GPL-3.0.txt')
 shutil.copyfile(r/'README.md',dest/'START-HERE.md')
@@ -15,7 +15,7 @@ shutil.copytree(r/'tests',src/'tests',ignore=shutil.ignore_patterns('__pycache__
 for p in r.glob('*.py'):shutil.copyfile(p,src/p.name)
 shutil.copyfile(r/'requirements.txt',src/'requirements.txt');shutil.copyfile(r/'icon.png',src/'icon.png')
 versions={}
-for name in ['Pillow','pypdf','PySide6-Essentials','shiboken6','pyinstaller']:
+for name in ['Pillow','pypdf','PySide6-Essentials','shiboken6','pyinstaller','openpyxl','et-xmlfile','defusedxml','reportlab','charset-normalizer']:
  d=importlib.metadata.distribution(name);versions[name]=d.version
  for p in d.files or []:
   if 'license' in str(p).lower() or 'copying' in str(p).lower():

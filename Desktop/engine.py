@@ -11,7 +11,8 @@ IMAGE_INPUTS = {'.png', '.jpg', '.jpeg', '.webp', '.bmp', '.tif', '.tiff', '.avi
 IMAGE_OUTPUTS = {'PNG': 'png', 'JPEG': 'jpg', 'WEBP': 'webp', 'TIFF': 'tiff', 'BMP': 'bmp'}
 MEDIA_INPUTS = {'.mp4': 'mov', '.mov': 'mov', '.m4v': 'mov', '.mkv': 'matroska', '.webm': 'matroska', '.mp3': 'mp3', '.wav': 'wav', '.flac': 'flac', '.ogg': 'ogg', '.m4a': 'mov', '.aac': 'aac'}
 MEDIA_OUTPUTS = {'MP4': ('mp4', ['-c:v','libx264','-preset','fast','-crf','23','-c:a','aac','-movflags','+faststart']), 'WEBM': ('webm',['-c:v','libvpx-vp9','-deadline','realtime','-cpu-used','6','-c:a','libopus']), 'MP3': ('mp3',['-vn','-c:a','libmp3lame','-b:a','192k']), 'WAV': ('wav',['-vn','-c:a','pcm_s16le']), 'FLAC': ('flac',['-vn','-c:a','flac']), 'OGG': ('ogg',['-vn','-c:a','libvorbis'])}
-OPERATIONS = list(IMAGE_OUTPUTS) + ['Image → PDF', 'PDF → Text', 'Merge PDFs', 'Split PDF', 'SRT → VTT', 'VTT → SRT', 'SHA-256'] + list(MEDIA_OUTPUTS)
+DOCUMENT_OPERATIONS = ['Excel → CSV', 'CSV → Excel', 'DOCX → Text', 'DOCX → PDF (text)', 'Text → PDF', 'Office → PDF']
+OPERATIONS = list(IMAGE_OUTPUTS) + ['Image → PDF', 'PDF → Text', 'Merge PDFs', 'Split PDF', 'SRT → VTT', 'VTT → SRT', 'SHA-256'] + list(MEDIA_OUTPUTS) + DOCUMENT_OPERATIONS
 class ConversionError(ValueError): pass
 
 def source_file(raw):
@@ -142,6 +143,9 @@ def convert(job):
                         pieces.append(item)
                         if sum(x.stat().st_size for x in pieces)>MAX_OUTPUT: raise ConversionError('Split outputs exceed 512 MiB.')
                     for i,item in enumerate(pieces):results.append(publish(item,folder,f'{p.stem}-page-{i+1}','pdf'))
+        elif target in DOCUMENT_OPERATIONS:
+            from document_converters import convert_document
+            results.extend(convert_document(p, target, Path(work), folder, job.get('office','')))
         elif target in MEDIA_OUTPUTS:
             media(p,stage,target,job.get('ffmpeg',''));results.append(publish(stage,folder,stem,MEDIA_OUTPUTS[target][0]))
         elif target=='SHA-256':
